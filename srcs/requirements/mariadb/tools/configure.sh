@@ -1,20 +1,8 @@
 #!/bin/sh
-
-if [ ! -d "/run/mysqld" ]; then
-	mkdir -p /run/mysqld
-	chown -R mysql:mysql /run/mysqld
-fi
-
 if [ ! -d "/var/lib/mysql/mysql" ]; then
 	
 	chown -R mysql:mysql /var/lib/mysql
-
-	tfile=`mktemp`
-	if [ ! -f "$tfile" ]; then
-		return 1
-	fi
-	
-	cat << EOF > $tfile
+	cat << EOF > sqlfile
 USE mysql;
 FLUSH PRIVILEGES;
 
@@ -32,8 +20,8 @@ GRANT ALL PRIVILEGES ON $WP_DATABASE_NAME.* TO '$WP_DATABASE_USR'@'%';
 FLUSH PRIVILEGES;
 EOF
 	# run init.sql
-	/usr/bin/mysqld --user=mysql --bootstrap < $tfile
-	rm -f $tfile
+	/usr/bin/mysqld --user=mysql --bootstrap < sqlfile
+	rm -f sqlfile
 fi
 
 # allow remote connections

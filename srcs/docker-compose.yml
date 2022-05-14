@@ -4,6 +4,18 @@ networks:
   localhost:
     name: inception
 
+volumes:
+  db-data:
+    driver_opts:
+      type: none
+      device: "${HOME}/data/mariadb:/var/lib/mysql"
+      o: bind
+  www-data:
+    driver_opts:
+      type: none
+      device: "${HOME}/data/website:/var/www/html"
+      o: bind
+
 services:
   nginx:
     build: requirements/nginx/
@@ -45,4 +57,3 @@ services:
     restart: always
     env_file:
       - .env
-    

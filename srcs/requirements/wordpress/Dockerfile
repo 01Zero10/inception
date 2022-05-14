@@ -1,10 +1,9 @@
-FROM alpine:3.13
+FROM alpine:3.14
 
 RUN	apk update && apk upgrade && apk add --no-cache \
 		wget				\
         tar                 \
 		mariadb-client		\
-		# Wordpress core depencencies
 		php7				\
 		php7-fpm			\
 		php7-bcmath			\
