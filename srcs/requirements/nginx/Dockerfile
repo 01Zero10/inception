@@ -1,11 +1,19 @@
-FROM debian:buster
+FROM alpine:3.13
 
-RUN apt upgrade && apt update -y
-RUN apt install nginx
+RUN	apk update && apk upgrade && apk add --no-cache \
+        nginx \
+        openssl
 
-COPY conf/my_site /tmp/nginx/my_site
-COPY tools/nginx_start.sh /tmp/nginx/nginx_start.sh
+# nginx SSL
+RUN mkdir /etc/nginx/ssl
+RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
+        -out /etc/nginx/ssl/dbalducc.pem \
+        -keyout /etc/nginx/ssl/dbalducc.key \
+        -subj "/C=IT/ST=Rome/L=Rome/O=42 School/OU=dbalducc/CN=dbalducc/"
 
-RUN bash /tmp/nginx/nginx_start.sh
+# nginx config
+RUN mkdir -p /run/nginx
+COPY conf/default.conf /etc/nginx/conf.d/default.conf
 
-RUN nginx -g 'daemon off;'
+#run nginx in forground to prevent container stopping
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
