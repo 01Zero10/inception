@@ -1,0 +1,57 @@
+version: "3"
+
+services:
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb
+    volumes: ${VOLPATH}/mariadb:/var/www/mysql
+    restart: unlees-stopped
+    port:
+      - "3306:3306"
+    network: 
+      - localhots
+    env_file:
+      - .env
+
+  nginx:
+    conteiner_name: nginx
+    build: ./requirements/nginx
+    volumes: "${HOME}/data/website:/var/www/html"
+    depend_on:
+      - wordpress
+    port: 
+      - "443:443"
+    restart: unlees-stopped
+    network: 
+      - localhots
+    env_file:
+      - .env
+    depend_on: mariadb
+
+  wordpress:
+    conteiner_name: wordpress
+    build: ./requirements/wordpress
+    volumes: ${VOLPATH}//:/var/www
+    restart: unlees-stopped
+    port: 
+      - "9000:9000"
+    network: 
+      - localhots
+    env_file:
+      - .env
+
+networks:
+  localhots:
+    name: inception
+
+volumes:
+  db-data:
+    driver_opts:
+      type: none
+      device: /home/dbalducc/data/db-data
+      o: bind
+  www-data:
+    driver_opts:
+      type: none
+      device: /home/dbalducc/data/www-data
+      o: bind
