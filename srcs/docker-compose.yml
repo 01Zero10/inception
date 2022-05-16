@@ -4,18 +4,6 @@ networks:
   localhost:
     name: inception
 
-volumes:
-  db-data:
-    driver_opts:
-      type: none
-      device: "${HOME}/data/mariadb:/var/lib/mysql"
-      o: bind
-  www-data:
-    driver_opts:
-      type: none
-      device: "${HOME}/data/website:/var/www/html"
-      o: bind
-
 services:
   nginx:
     build: requirements/nginx/
@@ -23,7 +11,7 @@ services:
     ports:
       - "443:443"
     volumes:
-      - "${HOME}/data/website:/var/www/html"
+      - "www-data:/var/www/html"
     depends_on:
       - wordpress
     networks:
@@ -36,7 +24,7 @@ services:
     ports:
       - "9000:9000"
     volumes:
-      - "${HOME}/data/website:/var/www/html"
+      - "www-data:/var/www/html"
     depends_on:
       - mariadb
     networks:
@@ -51,9 +39,20 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - "${HOME}/data/mariadb:/var/lib/mysql"
+      - "db-data:/var/lib/mysql"
     networks:
       - localhost
     restart: always
     env_file:
       - .env
+volumes:
+  db-data:
+    driver_opts:
+      type: none
+      device: ${HOME}/data/db-data
+      o: bind
+  www-data:
+    driver_opts:
+      type: none
+      device: ${HOME}/data/www-data
+      o: bind

@@ -18,21 +18,16 @@ stop:
 down:
 	docker-compose -f ./srcs/docker-compose.yml down
 
-rm: rvolumes down rnetwork
+rm: rvolumes down
 	docker system prune -a
 	
 rvolumes:
 	sudo rm -rf $(HOME)/data
 	docker volume rm srcs_www-data srcs_db-data
 
-rnetwork:
-	docker network rm $(docker network ls -q) 2>/dev/null
-
 volumes:
 	mkdir -p $(HOME)/data/db-data
 	mkdir -p $(HOME)/data/www-data
 
 fclean:
-	sudo docker rmi -f $(sudo docker images -qa)
-	sudo docker volume rm $(sudo docker volume ls -q)
 	sudo docker system prune -a --force
