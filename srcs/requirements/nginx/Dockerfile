@@ -1,16 +1,21 @@
-FROM alpine:3.14
+FROM alpine:3.15
 
-RUN	apk update && apk upgrade && apk add --no-cache \
-        nginx \
-        openssl
+# Update System and Install Tools
+RUN apk update && \
+	apk add nginx openssl
 
-RUN mkdir /etc/nginx/ssl
-RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
-        -out /etc/nginx/ssl/dbalducc.pem \
-        -keyout /etc/nginx/ssl/dbalducc.key \
-        -subj "/C=IT/ST=Rome/L=Rome/O=42 School/OU=dbalducc/CN=dbalducc/"
+# Create the root folder for nginx
+RUN mkdir -p /var/www/html/
 
-RUN mkdir -p /run/nginx
-COPY conf/default.conf /etc/nginx/conf.d/default.conf
+# change owner of The folder to nginx user
+RUN chown -R nginx:nginx /var/lib/nginx && \
+	chown -R nginx:nginx /var/www/html
 
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+# COPY Files to container
+COPY ./conf/nginx.conf /etc/nginx/
+
+# Copy installing script and make it executable
+COPY tools/run.sh /
+RUN chmod +x ./run.sh
+
+ENTRYPOINT [ "./run.sh" ]

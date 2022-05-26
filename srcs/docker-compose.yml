@@ -1,50 +1,53 @@
 version: '3'
 
-networks:
-  localhost:
-    name: inception
-
 services:
-  nginx:
-    build: requirements/nginx/
-    container_name: nginx
-    ports:
-      - "443:443"
+
+  mariadb:
+    build: requirements/mariadb
+    image: mariadb
+    container_name: mariadb
     volumes:
-      - "www-data:/var/www/html"
-    depends_on:
-      - wordpress
-    networks:
-      - localhost
+      - db-data:/var/lib/mysql
     restart: always
+    networks:
+      - wpsite
+    env_file:
+      - .env
 
   wordpress:
     build: requirements/wordpress/
-    container_name: wordpress
-    ports:
-      - "9000:9000"
+    image: wordpress
     volumes:
-      - "www-data:/var/www/html"
+      - www-data:/var/www/html
+    container_name: wordpress
     depends_on:
       - mariadb
     networks:
-      - localhost
+      - wpsite
     restart: always
     env_file:
       - .env
 
-  mariadb:
-    build: requirements/mariadb/
-    container_name: mariadb
-    ports:
-      - "3306:3306"
+  nginx:
+    build: requirements/nginx/
+    image: nginx
+    container_name: nginx
     volumes:
-      - "db-data:/var/lib/mysql"
+      - www-data:/var/www/html
+    ports:
+      - 443:443
+    depends_on:
+      - wordpress
     networks:
-      - localhost
+      - wpsite
     restart: always
     env_file:
       - .env
+      
+networks:
+  wpsite:
+    driver: bridge
+
 volumes:
   db-data:
     driver_opts:

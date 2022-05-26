@@ -1,9 +1,14 @@
-FROM alpine:3.14
+FROM alpine:3.15
 
-RUN	apk update && apk upgrade && apk add --no-cache \
-        mariadb \
-        mariadb-client
-        
-COPY tools/configure.sh /tmp/configure.sh
+# Update System and Install Tools
+RUN apk update && \
+	apk add mariadb mariadb-common mariadb-client openrc
 
-ENTRYPOINT ["sh", "/tmp/configure.sh"]
+# start openrc
+RUN openrc && \
+	touch /run/openrc/softlevel
+
+COPY tools/run.sh .
+RUN chmod +x /run.sh
+
+ENTRYPOINT [ "./run.sh" ]
