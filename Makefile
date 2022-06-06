@@ -1,25 +1,25 @@
 all: hosts rvolumes volumes build up
 
 hosts:
-	@sudo sed -i "s/localhost/dbalducc.42.fr/g" /etc/hosts
+	@sudo sudo sed -i "s/localhost/dbalducc.42.fr/g" /etc/hosts
 
 build:
-	docker-compose -f ./srcs/docker-compose.yml build
+	sudo docker-compose -f ./srcs/docker-compose.yml build
 
 up:
-	@docker-compose -f ./srcs/docker-compose.yml up -d
+	@sudo docker-compose -f ./srcs/docker-compose.yml up -d
 
 status:
-	docker ps
+	sudo docker ps
 
 stop:
-	docker-compose -f ./srcs/docker-compose.yml stop
+	sudo docker-compose -f ./srcs/docker-compose.yml stop
 
 down:
-	docker-compose -f ./srcs/docker-compose.yml down
+	sudo docker-compose -f ./srcs/docker-compose.yml down
 
 rm: rvolumes down
-	docker system prune -af
+	sudo docker system prune -af
 
 re: rm all
 	
@@ -27,5 +27,5 @@ rvolumes:
 	sudo rm -rf ${HOME}/data
 
 volumes:
-	mkdir -p ${HOME}/data/db-data
-	mkdir -p ${HOME}/data/www-data
+	sudo mkdir -p ${HOME}/data/db-data
+	sudo mkdir -p ${HOME}/data/www-data
